@@ -1,37 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import { Contact } from "../Contact/Contact";
+import { useSelector } from "react-redux";
 import css from "./ContactList.module.css";
 
-class ContactList extends Component {
-  handleDelete = (id) => {
-    const { handleDelete } = this.props;
-    handleDelete(id);
-  };
+export const ContactList = () => {
+  const contacts = useSelector((state) => state.contacts);
+  const filteredContacts = useSelector((state) => state.filters);
 
-  render() {
-    const { filteredEntries } = this.props;
+  const visibleContacts = filteredContacts
+    ? contacts.filter((contact) =>
+        contact.name.toLowerCase().includes(filteredContacts.filter)
+      )
+    : contacts;
 
-    return (
-      <ul className={css.list}>
-        {filteredEntries.map((entry) => (
-          <li className={css.item} key={entry.id}>
-            {entry.name}: {entry.number}
-            <button
-              className={css.deleteBtn}
-              onClick={() => this.handleDelete(entry.id)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-}
-
-ContactList.propTypes = {
-  filteredEntries: PropTypes.array.isRequired,
-  handleDelete: PropTypes.func.isRequired,
+  return (
+    <ul className={css.list}>
+      {visibleContacts.map((contact) => (
+        <li key={contact.id} className={css.item}>
+          <Contact contact={contact} />
+        </li>
+      ))}
+    </ul>
+  );
 };
-
-export default ContactList;
